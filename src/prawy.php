@@ -8,9 +8,11 @@ if ($conn->connect_error) {
 }
 ?>
 <form>
-
-
-
+    ID:<input type="number" placeholder="<?= $id ?>" readonly>
+    Email: <input type="email" placeholder="<?= $email ?>">
+    Data: <input type="text" placeholder="<?= $created_at ?>" readonly>
+    <input type="submit" value="Zmień hasło">
+    <input type="submit" value="Zapisz">
 </form>
 
 <?php
