@@ -2,7 +2,7 @@
 
 class Log {
 
-    private $filename = "lkjhfd.log";
+    private $filename = "user.log";
 
     function __construct($message){
         $date = new DateTime();
