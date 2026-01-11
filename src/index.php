@@ -1,120 +1,26 @@
-<?php
-
-class Log {
-
-    private $filename = "user.log";
-
-    function __construct($message){
-        $date = new DateTime();
-        $message = $date->format("Y-m-d h:i:s") ." / ". $message . "\r\n";
-
-        if (!file_exists($this->filename)) {
-            touch($this->filename);
-        }
-            $file = fopen($this->filename, 'a');
-            fwrite($file, $message);
-            fclose($file);
-    }
-}
-
-class User {
-    public $id;
-    public $email;
-    public $password_hash;
-    private $created_at;
-
-    public function getCreatedAt() {
-        $date = new DateTime($this->created_at);
-
-        return $date->modify("+1 week")->format('Y-m-d');;
-    }
-}
-
-
-$servername = "database";
-$username = "username";
-$password = "password";
-$port = 3306;
-
-
-$conn = new mysqli($servername, $username, $password,"default_database",$port);
-
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
-
-$email = $_POST['email'] ?? "";
-$id = $_GET['id'] ?? null;
-
-
-
-if ($email) {
-    $conn->begin_transaction();
-    try{
-        $sql = "INSERT INTO users (email,password_hash) VALUES ('$email', 0)";
-        $result = $conn->query($sql);
-    } catch (mysqli_sql_exception $e) {
-        $conn->rollback();
-
-        new Log($e->getMessage());
-
-    } finally {
-        if (isset($result)) { $conn->commit(); }
-    }
-}
-
-
-
-$sql = "SELECT * FROM users";
-
-$result = $conn->query($sql);
-
-if($result->num_rows){
-    echo "<table border=1>";
-    echo "<tr><th>ID</th><th>EMAIL</th><th>AKCJE</th></tr>";
-
-    while($row = $result->fetch_assoc()){
-
-        echo "<tr><td>{$row['id']}</td><td>{$row['email']}</td><td><a href='?id={$row['id']}'>Zobacz</a></td></tr>";
-
-    }
-    echo "</table>";
-}
-
-
-if ($id) {
-
-    $sql = "SELECT * FROM users WHERE id = $id";
-
-    $result = $conn->query($sql);
-
-    if ($result->num_rows === 1){
-        $row = $result->fetch_object(User::class);
-        echo "<p>
-            <h1>ID:{$row->id}</h1>
-            <i>{$row->email}</i>
-            <b>{$row->getCreatedAt()}</b>
-            <pre>";
-              var_dump($row);
-        echo "</pre>
-        </p>";
-
-    }
-
-}
-
-$conn->close();
-
-?>
-<p>
-
-    <?php
-
-    ?>
-
-    <form method="POST">
-        <input name="email" type="email" value="<?=$email?>"/>
-        <button type="submit">Wyślij</button>
-    </form>
-
-</p>
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  </head>
+  <body>
+      <div class="container mt-5">
+        <div class="row">
+            <div class="col">
+             <?php
+                include("rt.php");
+             ?>
+            </div>
+            <div class="col">
+                <?php
+                    include("prawy.php");
+                ?>
+            </div>
+          </div>
+      </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  </body>
+</html>
